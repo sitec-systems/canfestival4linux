@@ -194,6 +194,31 @@ UNS32 _setODentry( CO_Data* d,
   szData = ptrTable->pSubindex[bSubindex].size;
   Callback = ptrTable->pSubindex[bSubindex].callback;
 
+  //----------------------------- DYNAMIC DOMAIN SIZE TRIAL ------------------
+  if(dataType == domain){
+    UNS32 maxsize = 65536; // To be set to the right value
+    if( *pExpectedSize == 0 || *pExpectedSize <= 65536 ){
+      memcpy(ptrTable->pSubindex[bSubindex].pObject,pSourceData, *pExpectedSize);
+      subindex *ptr = &ptrTable->pSubindex[bSubindex];
+      ptr->size = *pExpectedSize;
+      /* Callbacks */
+      if(Callback){
+        errorCode = (Callback)(d, ptrTable, bSubindex);
+        if(errorCode != OD_SUCCESSFUL)
+        {
+            return errorCode;
+        }
+      }
+      return OD_SUCCESSFUL;
+    }else{
+      *pExpectedSize = szData;
+      accessDictionaryError(wIndex, bSubindex, szData, *pExpectedSize, OD_LENGTH_DATA_INVALID);
+      return OD_LENGTH_DATA_INVALID;
+    }
+  }
+
+  //--------------------------------- END ------------------------------------------------
+
   /* check the size, we must allow to store less bytes than data size, even for intergers
 	 (e.g. UNS40 : objdictedit will store it in a uint64_t, setting the size to 8 but PDO comes
 	 with 5 bytes so ExpectedSize is 5 */
