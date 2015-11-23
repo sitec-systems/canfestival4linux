@@ -1,4 +1,20 @@
-sitec systems GmbH fork of [CanFestival](http://dev.automforge.net/CanFestival-3) based on the fork of [mongo](https://bitbucket.org/Mongo/canfestival-3-asc). Contains changes which are not merged to the mainline code. This is although used as backup for the public code.
+This is a fork of the CanFestival-3 project http://dev.automforge.net/CanFestival-3
 
-sitec sytems GmbH - [http://wwww.sitec-systems.de](http://wwww.sitec-systems.de)
+Latest work done:
 
+- The stack can now be compiled as a .so shared lib, thanks to Mattes Standfuß for his work
+
+- New example added : examples/linux/dcf
+
+- I needed the stack to be more dynamic, i wanted to be able to dynamically build the OD and the CO_Data struct without any global declaration, so i have made few changes. (this is not a dirty hack it is even cleaner i think)
+
+- solving array of string or domain issue (search for "Array of strings issue" in the mailing list)
+
+- solving bugs on sdo block transfer and dcf management
+
+- stm32F0/F1/F4 basic support
+
+Any feedback, comment, is welcome.
+
+You can contact me at : 
+fbeaulier < a t > ingelibre < d o t > fr
