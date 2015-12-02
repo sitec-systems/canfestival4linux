@@ -597,7 +597,7 @@ class NodeManager:
                 self.CurrentNode.RemoveMappingEntry(index, subIndex)
 
     def AddMapVariableToCurrent(self, index, name, struct, number, node = None):
-        if 0x2000 <= index <= 0x5FFF:
+        if 0x2000 <= index <= 0x5FFF or 0x1009 <= index <= 0x100A:
             disable_buffer = node != None
             if node == None:
                 node = self.CurrentNode
