@@ -209,6 +209,13 @@ UNS32 _setODentry( CO_Data* d,
             return errorCode;
         }
       }
+
+      /* Store value if requested with user defined function
+	     Function should return OD_ACCES_FAILED in case of store error */
+      if (ptrTable->pSubindex[bSubindex].bAccessType & TO_BE_SAVE){
+        return (*d->storeODSubIndex)(d, wIndex, bSubindex);
+      }
+
       return OD_SUCCESSFUL;
     }else{
       *pExpectedSize = szData;
@@ -227,7 +234,7 @@ UNS32 _setODentry( CO_Data* d,
 #ifdef CANOPEN_BIG_ENDIAN
       /* re-endianize do not occur for bool, strings time and domains */
       if(endianize && dataType > boolean && !(
-            dataType >= visible_string && 
+            dataType >= visible_string &&
             dataType <= domain))
         {
           /* we invert the data source directly. This let us do range
@@ -248,14 +255,14 @@ UNS32 _setODentry( CO_Data* d,
         return errorCode;
       }
       memcpy(ptrTable->pSubindex[bSubindex].pObject,pSourceData, *pExpectedSize);
-     /* TODO : CONFORM TO DS-301 : 
+     /* TODO : CONFORM TO DS-301 :
       *  - stop using NULL terminated strings
-      *  - store string size in td_subindex 
+      *  - store string size in td_subindex
       * */
       /* terminate visible_string with '\0' */
       if(dataType == visible_string && *pExpectedSize < szData)
         ((UNS8*)ptrTable->pSubindex[bSubindex].pObject)[*pExpectedSize] = 0;
-      
+
       *pExpectedSize = szData;
 
       /* Callbacks */
@@ -287,7 +294,7 @@ UNS32 RegisterSetODentryCallBack(CO_Data* d, UNS16 wIndex, UNS8 bSubindex, ODCal
   const indextable *odentry;
 
   odentry = d->scanIndexOD (d, wIndex, &errorCode);
-  if(errorCode == OD_SUCCESSFUL &&  bSubindex < odentry->bSubCount) 
+  if(errorCode == OD_SUCCESSFUL &&  bSubindex < odentry->bSubCount)
     odentry->pSubindex[bSubindex].callback = Callback;
   return errorCode;
 }
