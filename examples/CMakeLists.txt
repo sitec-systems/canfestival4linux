@@ -1,5 +1,6 @@
 add_subdirectory(CANOpenShell)
 add_subdirectory(DS401_Master)
 add_subdirectory(linux/dcf)
+add_subdirectory(linux/cpp)
 add_subdirectory(TestMasterMicroMod)
 add_subdirectory(TestMasterSlave)
