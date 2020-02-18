@@ -1,15 +1,17 @@
 project(canfestival)
 cmake_minimum_required(VERSION 3.3)
 
-include_directories(include)
-include_directories(include/unix)
-include_directories(include/timers_unix)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/unix)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/timers_unix)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 find_package(Threads)
 find_package(RT)
 find_package(DL)
+
+option(CF4L_STATIC_LIB "Build canfestival 4 linux as static lib" OFF)
 
 set(MAX_CAN_BUS_ID "1" CACHE STRING "Number of can bus to use")
 set(SDO_MAX_LENGTH_TRANSFER "32" CACHE STRING "max bytes to transmit by SDO")
@@ -35,6 +37,58 @@ configure_file(include/config.h.in config.h @ONLY)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_subdirectory(drivers)
-add_subdirectory(src)
-add_subdirectory(examples)
+set(cf4ldriver ${CMAKE_CURRENT_SOURCE_DIR}/drivers)
+add_library(canfestival_can_socket SHARED ${cf4ldriver}/can_socket.c)
+
+if (CF4L_STATIC_LIB)
+    add_library(canfestival_unix STATIC ${cf4ldriver}/unix.c ${cf4ldriver}/timers_unix.c)
+else(CF4L_STATIC_LIB)
+    add_library(canfestival_unix SHARED ${cf4ldriver}/unix.c ${cf4ldriver}/timers_unix.c)
+endif(CF4L_STATIC_LIB)
+
+target_link_libraries(canfestival_unix 
+    ${DL_LIBRARIES}
+    ${RT_LIBRARIES}
+    Threads::Threads
+    )
+
+set(cf4lcore ${CMAKE_CURRENT_SOURCE_DIR}/src)
+list(APPEND cf4lcore_srcs 
+    ${cf4lcore}/objacces.c
+    ${cf4lcore}/lifegrd.c
+    ${cf4lcore}/sdo.c
+    ${cf4lcore}/pdo.c
+    ${cf4lcore}/sync.c
+    ${cf4lcore}/nmtSlave.c
+    ${cf4lcore}/nmtMaster.c
+    ${cf4lcore}/states.c
+    ${cf4lcore}/timer.c
+    ${cf4lcore}/dcf.c
+    ${cf4lcore}/emcy.c
+    )
+
+if (CF4L_STATIC_LIB)
+    add_library(canfestival STATIC ${cf4lcore_srcs})
+else(CF4L_STATIC_LIB)
+    add_library(canfestival SHARED ${cf4lcore_srcs})
+endif(CF4L_STATIC_LIB)
+
+target_link_libraries(canfestival
+    ${DL_LIBRARIES}
+    )
+
+list(APPEND cf4l_INCLUDES
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/unix
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/timers_unix
+    )
+set(cf4l_INCLUDE_DIR ${cf4l_INCLUDES} PARENT_SCOPE)
+
+list(APPEND cf4l_LIBS
+    canfestival
+    canfestival_unix
+    )
+set(cf4l_LIBRARIES ${cf4l_LIBS} PARENT_SCOPE)
+
+#add_subdirectory(examples)
