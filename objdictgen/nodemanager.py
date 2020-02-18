@@ -169,7 +169,7 @@ class NodeManager:
         if self.CurrentNode:
             return self.CurrentNode.GetTypeList()
         else:
-            return ""
+            return [""]
 
     """
     Return the list of variables that can be mapped for the current node
@@ -178,7 +178,7 @@ class NodeManager:
         if self.CurrentNode:
             return self.CurrentNode.GetMapList()
         else:
-            return ""
+            return [""]
 
 #-------------------------------------------------------------------------------
 #                        Create Load and Save Functions

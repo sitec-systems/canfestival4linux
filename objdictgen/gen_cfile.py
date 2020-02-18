@@ -336,11 +336,14 @@ def GenerateFileContent(Node, headerfilepath, pointers_dict = {}):
                     name = "%s_obj%04X_%s"%(texts["NodeName"], texts["index"], FormatName(subentry_infos["name"]))
             if typeinfos[2] == "visible_string":
                 if params_infos["buffer_size"] != "":
-		  sizeof = params_infos["buffer_size"]
-		else:
+                    sizeof = params_infos["buffer_size"]
+                else:
                   sizeof = str(max(len(values[subIndex]), default_string_size))
             elif typeinfos[2] == "domain":
-                sizeof = str(len(values[subIndex]))
+                sizeof_param = FormatName("%s_%s"%(entry_infos["name"],subentry_infos["name"]))
+                print(sizeof_param)
+                #sizeof = str(len(values[subIndex]))
+                sizeof = params_infos["buffer_size"]
             else:
                 sizeof = "sizeof (%s)"%typeinfos[0]
             params = Node.GetParamsEntry(index, subIndex)
