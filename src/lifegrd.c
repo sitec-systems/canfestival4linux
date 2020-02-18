@@ -120,7 +120,9 @@ void proceedNODE_GUARD(CO_Data* d, Message* m )
       e_nodeState newNodeState = (e_nodeState) ((*m).data[0] & 0x7F);
 
       MSG_WAR(0x3110, "Received NMT nodeId : ", nodeId);
-      
+
+      (*d->heartbeatCallback)(d, nodeId, newNodeState);
+
       /*!
       ** Record node response for node guarding service
       */
@@ -374,4 +376,4 @@ void _heartbeatError(CO_Data* d, UNS8 heartbeatID){}
 void _post_SlaveBootup(CO_Data* d, UNS8 SlaveID){}
 void _post_SlaveStateChange(CO_Data* d, UNS8 nodeId, e_nodeState newNodeState){}
 void _nodeguardError(CO_Data* d, UNS8 id){}
-
+void _heartbeatCallback(CO_Data* d, UNS8 nodeID, e_nodeState state){}
