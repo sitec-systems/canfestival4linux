@@ -87,6 +87,7 @@ struct struct_CO_Data {
 	UNS16 *ProducerHeartBeatTime;
 	TIMER_HANDLE ProducerHeartBeatTimer;
 	heartbeatError_t heartbeatError;
+    heartbeatCallback_t heartbeatCallback;
 	e_nodeState NMTable[NMT_MAX_NODE_ID]; 
 
 	/* NMT-nodeguarding */
@@ -289,6 +290,7 @@ struct struct_CO_Data {
 	& NODE_PREFIX ## _obj1017,                 /* ProducerHeartBeatTime */\
 	TIMER_NONE,                                /* ProducerHeartBeatTimer */\
 	_heartbeatError,           /* heartbeatError */\
+	_heartbeatCallback,        /* heartbeatCallback */\
 	\
 	{REPEAT_NMT_MAX_NODE_ID_TIMES(NMTable_Initializer)},\
                                                    /* is  well initialized at "Unknown_state". Is it ok ? (FD)*/\

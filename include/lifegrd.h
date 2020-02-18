@@ -67,6 +67,9 @@ void _post_SlaveStateChange(CO_Data* d, UNS8 nodeId, e_nodeState newNodeState);
 typedef void (*nodeguardError_t)(CO_Data*, UNS8);
 void _nodeguardError(CO_Data* d, UNS8 id);
 
+typedef void (*heartbeatCallback_t)(CO_Data*, UNS8, e_nodeState);
+void _heartbeatCallback(CO_Data *d, UNS8 id, e_nodeState state);
+
 #include "data.h"
 
 /*************************************************************************
