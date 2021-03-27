@@ -9,47 +9,31 @@
 ## -----------------------------------------------------------------------------
 ## Check for the header files
 
-find_path (RT_INCLUDES time.h
-  PATHS /usr/local/include /usr/include ${CMAKE_EXTRA_INCLUDES}
+find_path (RT_INCLUDE_DIR time.h
+  PATHS 
+    /usr/local/include
+    /usr/include
+    "$ENV{SDKTARGETSYSROOT}/usr/include"
   )
 
 ## -----------------------------------------------------------------------------
 ## Check for the library
 
-find_library (RT_LIBRARIES rt
-  PATHS /usr/local/lib /usr/lib /lib ${CMAKE_EXTRA_LIBRARIES}
+find_library (RT_LIBRARY rt
+  PATHS 
+    /usr/local/lib 
+    /usr/lib 
+    /lib
+    "$ENV{SDKTARGETSYSROOT}/usr/lib"
   )
 
 ## -----------------------------------------------------------------------------
 ## Actions taken when all components have been found
 
-if (RT_INCLUDES AND RT_LIBRARIES)
-  set (HAVE_RT TRUE)
-else (RT_INCLUDES AND RT_LIBRARIES)
-  if (NOT RT_FIND_QUIETLY)
-    if (NOT RT_INCLUDES)
-      message (STATUS "Unable to find RT header files!")
-    endif (NOT RT_INCLUDES)
-    if (NOT RT_LIBRARIES)
-      message (STATUS "Unable to find RT library files!")
-    endif (NOT RT_LIBRARIES)
-  endif (NOT RT_FIND_QUIETLY)
-endif (RT_INCLUDES AND RT_LIBRARIES)
-
-if (HAVE_RT)
-  if (NOT RT_FIND_QUIETLY)
-    message (STATUS "Found components for RT")
-    message (STATUS "RT_INCLUDES = ${RT_INCLUDES}")
-    message (STATUS "RT_LIBRARIES = ${RT_LIBRARIES}")
-  endif (NOT RT_FIND_QUIETLY)
-else (HAVE_RT)
-  if (RT_FIND_REQUIRED)
-    message (FATAL_ERROR "Could not find RT!")
-  endif (RT_FIND_REQUIRED)
-endif (HAVE_RT)
-
-mark_as_advanced (
-  HAVE_RT
-  RT_LIBRARIES
-  RT_INCLUDES
-  )
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(RT DEFAULT_MSG
+    RT_INCLUDE_DIR
+    RT_LIBRARY)
+mark_as_advanced(RT_LIBRARIES RT_INCLUDES)
+set(RT_LIBRARIES ${RT_LIBRARY})
+set(RT_INCLUDE_DIRS ${RT_INCLUDE_DIR})
