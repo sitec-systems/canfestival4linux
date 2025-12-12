@@ -1,0 +1,7 @@
+﻿---
+BasedOnStyle: LLVM
+BreakBeforeBraces: Attach
+Cpp11BracedListStyle: 'true'
+IndentWidth: '4'
+
+...
