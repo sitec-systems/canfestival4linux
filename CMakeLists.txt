@@ -1,6 +1,8 @@
 project(canfestival)
 cmake_minimum_required(VERSION 3.3)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/unix)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/timers_unix)
@@ -12,6 +14,8 @@ find_package(RT)
 find_package(DL)
 
 option(CF4L_STATIC_LIB "Build canfestival 4 linux as static lib" OFF)
+option(CF4L_BUILD_EXAMPLES "Build the examples" OFF)
+option(CF4L_DEBUG_OUTPUT_LIB "Debugging printf outputs from the library" OFF)
 
 set(MAX_CAN_BUS_ID "1" CACHE STRING "Number of can bus to use")
 set(SDO_MAX_LENGTH_TRANSFER "32" CACHE STRING "max bytes to transmit by SDO")
@@ -20,6 +24,7 @@ set(SDO_MAX_SIMULTANEOUS_TRANSFERS "4" CACHE STRING "Number of SDO that the node
 set(NMT_MAX_NODE_ID "128" CACHE STRING "can be reduced to gain memory on small network")
 set(SDO_TIMEOUT_MS "3000" CACHE STRING "Timeout in milliseconds for SDO (none to disable the feature")
 set(EMCY_MAX_ERRORS "8" CACHE STRING "Max number of active errors managed in error_data structure")
+set(DEBUG_WAR_CONSOLE_ON "1" CACHE STRING "enable debug warnings on the ")
 
 foreach(sdoMaxSimTransfer RANGE 1 ${SDO_MAX_SIMULTANEOUS_TRANSFERS})
   set(REPEAT_SDO_MAX_SIMULTANEOUS_TRANSFERS_TIMES "repeat ${REPEAT_SDO_MAX_SIMULTANEOUS_TRANSFERS_TIMES}")
@@ -77,6 +82,10 @@ target_link_libraries(canfestival
     ${DL_LIBRARIES}
     )
 
+if (CF4L_DEBUG_OUTPUT_LIB)
+    target_compile_definitions(canfestival PRIVATE "DEBUG_WAR_CONSOLE_ON")
+endif()
+
 list(APPEND cf4l_INCLUDES
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -91,4 +100,6 @@ list(APPEND cf4l_LIBS
     )
 set(cf4l_LIBRARIES ${cf4l_LIBS} PARENT_SCOPE)
 
-#add_subdirectory(examples)
+if (CF4L_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
