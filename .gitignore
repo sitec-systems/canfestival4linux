@@ -1,3 +1,6 @@
 *.patch
 *.pyc
 build/
+.cache/clangd/index
+build-c2
+compile_commands.json
