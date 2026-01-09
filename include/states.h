@@ -138,8 +138,9 @@ UNS8 getNodeId (CO_Data* d);
  * @brief Define the node ID. Initialize the object dictionary
  * @param *d Pointer on a CAN object data structure
  * @param nodeId The node ID to assign
+ * @return 0 on success; -1 if the node id is invalid
  */
-void setNodeId (CO_Data* d, UNS8 nodeId);
+int setNodeId (CO_Data* d, UNS8 nodeId);
 
 /** 
  * @brief Some stuff to do when the node enter in pre-operational mode

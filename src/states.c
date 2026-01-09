@@ -218,26 +218,21 @@ UNS8 setState(CO_Data *d, e_nodeState newState) {
 **/
 UNS8 getNodeId(CO_Data *d) { return *d->bDeviceNodeId; }
 
-/*!
-**
-**
-** @param d
-** @param nodeId
-**/
-void setNodeId(CO_Data *d, UNS8 nodeId) {
+int setNodeId(CO_Data *d, UNS8 nodeId) {
     UNS16 offset = d->firstIndex->SDO_SVR;
+
+    if (!(nodeId > 0 && nodeId <= 127)) {
+        MSG_WAR(0x2D01, "Invalid NodeID", nodeId);
+        return -1;
+    }
 
 #ifdef CO_ENABLE_LSS
     d->lss_transfer.nodeID = nodeId;
     if (nodeId == 0xFF) {
         *d->bDeviceNodeId = nodeId;
-        return;
-    } else
-#endif
-        if (!(nodeId > 0 && nodeId <= 127)) {
-        MSG_WAR(0x2D01, "Invalid NodeID", nodeId);
-        return;
+        return -1;
     }
+#endif
 
     if (offset) {
         /* Adjust COB-ID Client->Server (rx) only id already set to default
@@ -259,14 +254,13 @@ void setNodeId(CO_Data *d, UNS8 nodeId) {
     }
 
     /*
-          Initialize the server(s) SDO parameters
-          Remember that only one SDO server is allowed, defined at index 0x1200
-
-          Initialize the client(s) SDO parameters
-          Nothing to initialize (no default values required by the DS 401)
-          Initialize the receive PDO communication parameters. Only for 0x1400
-       to 0x1403
-    */
+     * Initialize the server(s) SDO parameters
+     * Remember that only one SDO server is allowed, defined at index 0x1200
+     * Initialize the client(s) SDO parameters
+     * Nothing to initialize (no default values required by the DS 401)
+     * Initialize the receive PDO communication parameters. Only for 0x1400
+     * to 0x1403
+     */
     {
         UNS8 i = 0;
         UNS16 offset = d->firstIndex->PDO_RCV;
@@ -283,6 +277,7 @@ void setNodeId(CO_Data *d, UNS8 nodeId) {
                 offset++;
             }
     }
+
     /* ** Initialize the transmit PDO communication parameters. Only for 0x1800
      * to 0x1803 */
     {
@@ -305,11 +300,14 @@ void setNodeId(CO_Data *d, UNS8 nodeId) {
 
     /* Update EMCY COB-ID if already set to default*/
     if ((*d->error_cobid == *d->bDeviceNodeId + 0x80) ||
-        (*d->bDeviceNodeId == 0xFF))
+        (*d->bDeviceNodeId == 0xFF)) {
         *d->error_cobid = nodeId + 0x80;
+    }
 
     /* bDeviceNodeId is defined in the object dictionary. */
     *d->bDeviceNodeId = nodeId;
+
+    return 0;
 }
 
 void _initialisation(CO_Data *d) {}
